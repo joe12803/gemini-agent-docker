@@ -1,33 +1,25 @@
-# Gemini Agent Docker (One-Click) 🐳
+# Gemini Agent Docker (Final Stack) 🐳
 
-这是一个全栈 AI Agent 部署套件。通过 Docker Compose，你可以瞬间部署一套包含 **免费 Gemini 大脑** + **本地工具箱** 的完整 AI 系统。
+本项目是 **Gemini + Bridge + OpenClaw** 的终极集成方案。
 
-## 🌟 核心架构
-- **Backend (8080)**: 提供底层推理能力。
-- **Bridge (18789)**: 协议转换，并内置了 Google 搜索 (ddgr) 和系统时钟工具。
-- **OpenClaw (18789)**: 统领全局，执行复杂任务。
+## 🏗️ 三层架构
+1. **Gemini-Backend (8080)**: 底层模型推理。
+2. **Gemini-Bridge (18789)**: 协议转换与轻量工具（搜索/时间）。
+3. **OpenClaw (18790)**: **Agent 核心统帅**，支持复杂 Function Calling 和多轮对话。
 
-## 🚀 快速复现指南
+## 🚀 复现步骤
 
-### 1. 环境准备
-确保你的服务器已安装 Docker 和 Docker Compose。
+### 1. 自动同步源码
+克隆本仓库后，脚本会自动拉取 OpenClaw-Zero-Token 的最新代码到 `openclaw-src` 目录。
 
-### 2. 配置 Cookie
-将你的 Gemini Cookie 写入 `config/backend.json`。
-
-### 3. 一键启动
+### 2. 启动全家桶
 ```bash
-git clone https://github.com/joe12803/gemini-agent-docker.git
-cd gemini-agent-docker
 docker-compose up -d
 ```
 
-### 4. 验证 API
-```bash
-curl http://localhost:18789/v1/chat/completions \
--H "Content-Type: application/json" \
--d '{"messages": [{"role": "user", "content": "搜索今天的新闻"}]}'
-```
+### 3. 使用 OpenClaw Agent
+访问 `http://localhost:18790/v1`。此时的 OpenClaw 已经预配置为使用 `gemini-bridge` 作为其大脑。
 
-## 🛠️ 定制化
-你可以修改 `bridge/bridge.js` 来增加更多你需要的本地工具。
+## 🛠️ 管理工具
+- **添加工具**: 在 `openclaw-src/skills` 中添加你的技能脚本。
+- **自定义网关**: 修改 `bridge/bridge.js`。
