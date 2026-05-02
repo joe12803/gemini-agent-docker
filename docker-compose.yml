@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # L1: 大脑 (Gemini Web API)
+  # L1: 大脑 (需先准备好 config/backend.json)
   gemini-backend:
-    image: geminiweb2api:latest
+    image: xxxx/geminiweb2api:latest
     container_name: gemini-backend
     ports:
       - "8080:8080"
@@ -11,29 +11,23 @@ services:
       - ./config/backend.json:/app/config.json
     restart: always
 
-  # L2: 适配器 (智能网关)
+  # L2: 适配器 (已上传至 GitHub 镜像库)
   gemini-bridge:
-    build: ./bridge
+    image: ghcr.io/joe12803/gemini-tool-bridge:latest
     container_name: gemini-bridge
     ports:
       - "18789:18789"
     environment:
       - GEMINI_BACKEND=http://gemini-backend:8080
     restart: always
-    depends_on:
-      - gemini-backend
 
-  # L3: 统帅 (OpenClaw-Zero-Token)
+  # L3: 统帅 (本地构建以支持自定义 Skills)
   openclaw-zero-token:
-    image: node:20-slim
+    build: ./openclaw-zero-token
     container_name: openclaw-zero-token
-    working_dir: /app
     volumes:
-      - ./openclaw-zero-token:/app # 挂载 openclaw-zero-token 核心源码
-      - ./config/openclaw.json:/root/.openclaw/openclaw.json # 挂载特有配置
-    command: ["node", "openclaw.mjs", "gateway", "run", "--bind", "lan", "--port", "18790", "--force"]
+      - ./openclaw-zero-token:/app
+      - ./config/openclaw.json:/root/.openclaw/openclaw.json
     ports:
       - "18790:18790"
     restart: always
-    depends_on:
-      - gemini-bridge
