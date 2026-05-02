@@ -24,15 +24,13 @@ services:
       - gemini-backend
 
   # L3: 统帅 (OpenClaw-Zero-Token)
-  openclaw:
+  openclaw-zero-token:
     image: node:20-slim
-    container_name: openclaw
+    container_name: openclaw-zero-token
     working_dir: /app
     volumes:
-      - ./openclaw-src:/app # 挂载 OpenClaw 源码
-      - ./config/openclaw.json:/root/.openclaw/openclaw.json # 挂载预设好的配置文件
-    environment:
-      - NODE_ENV=production
+      - ./openclaw-zero-token:/app # 挂载 openclaw-zero-token 核心源码
+      - ./config/openclaw.json:/root/.openclaw/openclaw.json # 挂载特有配置
     command: ["node", "openclaw.mjs", "gateway", "run", "--bind", "lan", "--port", "18790", "--force"]
     ports:
       - "18790:18790"
