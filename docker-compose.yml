@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # L1: Gemini 大脑 (网页转 API)
+  gemini-backend:
+    image: geminiweb2api:latest # 需先构建
+    container_name: gemini-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/backend.json:/app/config.json
+    restart: always
+
+  # L2: 智能适配器 (工具拦截与格式化)
+  gemini-bridge:
+    build: 
+      context: ./bridge
+    container_name: gemini-bridge
+    ports:
+      - "18789:18789"
+    environment:
+      - GEMINI_BACKEND=http://gemini-backend:8080
+    restart: always
+    depends_on:
+      - gemini-backend
+
+  # L3: OpenClaw Agent (可选，通过 CLI 接入)
+  # 这里可以挂载你的 openclaw 配置，实现全自动工具链
