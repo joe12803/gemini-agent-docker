@@ -29,6 +29,7 @@ services:
       - ./openclaw-zero-token/openclaw.json:/app/openclaw.json
     environment:
       - PORT=18790
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "lan", "--allow-unconfigured", "--token", "sk-123456", "--auth", "token", "--ws-log", "full"]
     depends_on:
       - gemini-bridge
     restart: always
