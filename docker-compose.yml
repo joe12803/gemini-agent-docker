@@ -1,35 +1,94 @@
 services:
-  gemini-backend:
+  # Account 1
+  gemini-backend-1:
     image: joe1280/geminiweb2api:latest
-    container_name: gemini-backend
-    ports:
-      - "8080:8080"
+    container_name: gemini-backend-1
     volumes:
-      - /opt/geminiweb2api/config.json:/app/config.json
+      - /opt/gemini-accounts/acc1.json:/app/config.json
     restart: always
 
-  gemini-bridge:
+  gemini-bridge-1:
     image: joe1280/gemini-tool-bridge:latest
-    container_name: gemini-bridge
+    container_name: gemini-bridge-1
     ports:
       - "18789:18789"
     environment:
-      - GEMINI_BACKEND=http://gemini-backend:8080
+      - GEMINI_BACKEND=http://gemini-backend-1:8080
       - API_KEY=sk-123456
     depends_on:
-      - gemini-backend
+      - gemini-backend-1
     restart: always
 
+  # Account 2
+  gemini-backend-2:
+    image: joe1280/geminiweb2api:latest
+    container_name: gemini-backend-2
+    volumes:
+      - /opt/gemini-accounts/acc2.json:/app/config.json
+    restart: always
+
+  gemini-bridge-2:
+    image: joe1280/gemini-tool-bridge:latest
+    container_name: gemini-bridge-2
+    ports:
+      - "18791:18789"  # Map host 18791 to container 18789
+    environment:
+      - GEMINI_BACKEND=http://gemini-backend-2:8080
+      - API_KEY=sk-123456
+      - PORT=18789
+    depends_on:
+      - gemini-backend-2
+    restart: always
+
+  # Management Gateway
   openclaw-agent:
     image: joe1280/openclaw-zero-token:latest
     container_name: openclaw-agent
-    ports:
-      - "18790:18790"
+    network_mode: host
     volumes:
-      - ./openclaw-zero-token/openclaw.json:/app/openclaw.json
+      - /opt/gemini-agent-docker/openclaw-home/:/home/node/.openclaw/
     environment:
       - PORT=18790
-    command: ["node", "openclaw.mjs", "gateway", "--bind", "lan", "--allow-unconfigured", "--token", "sk-123456", "--auth", "token", "--ws-log", "full"]
+      - OPENCLAW_BIND=loopback
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "loopback", "--port", "18790", "--allow-unconfigured", "--token", "sk-123456", "--auth", "token", "--ws-log", "full"]
+    restart: always
+
+  gemini-backend-3:
+    image: joe1280/geminiweb2api:latest
+    container_name: gemini-backend-3
+    volumes:
+      - /opt/gemini-accounts/3.json:/app/config.json
+    restart: always
+
+  gemini-bridge-3:
+    image: joe1280/gemini-tool-bridge:latest
+    container_name: gemini-bridge-3
+    ports:
+      - "18793:18789"
+    environment:
+      - GEMINI_BACKEND=http://gemini-backend-3:8080
+      - API_KEY=sk-123456
+      - PORT=18789
     depends_on:
-      - gemini-bridge
+      - gemini-backend-3
+    restart: always
+
+  gemini-backend-4:
+    image: joe1280/geminiweb2api:latest
+    container_name: gemini-backend-4
+    volumes:
+      - /opt/gemini-accounts/4.json:/app/config.json
+    restart: always
+
+  gemini-bridge-4:
+    image: joe1280/gemini-tool-bridge:latest
+    container_name: gemini-bridge-4
+    ports:
+      - "18795:18789"
+    environment:
+      - GEMINI_BACKEND=http://gemini-backend-4:8080
+      - API_KEY=sk-123456
+      - PORT=18789
+    depends_on:
+      - gemini-backend-4
     restart: always
